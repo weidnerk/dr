@@ -1,13 +1,12 @@
+
+import {throwError as observableThrowError,  Observable } from 'rxjs';
 import { Injectable }    from '@angular/core';
 import { Headers, Http, Response, RequestOptions } from '@angular/http';
+import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
 
-import { Observable } from 'rxjs/Observable';
-import 'rxjs/add/operator/map';
-import 'rxjs/add/operator/do';
-import 'rxjs/add/operator/catch';
-import 'rxjs/add/observable/throw';
-import 'rxjs/add/observable/of';
-import { EmptyObservable } from 'rxjs/observable/EmptyObservable';
+import {catchError} from 'rxjs/internal/operators';
+
+// import { EmptyObservable } from 'rxjs/observable/EmptyObservable';
 
 import { CMSCompany } from '../_models/company';
 import { environment } from '../../environments/environment';
@@ -22,51 +21,49 @@ export class DealerService {
     private postFlexDealerMatchUrl:string  = environment.API_FLEX_ENDPOINT + 'company/flexdealermatch';
     private postCompanyUrl:string  = environment.API_FLEX_ENDPOINT + 'company/storecompany';
     
-    constructor(private http: Http) { }
+    constructor(private http: HttpClient) { }
 
     postDealer(company: CMSCompany): Observable<CMSCompany> {
         
         let url: string = this.postDealerUrl;
         let body = JSON.stringify(company);
         //let body = "{\"CompanyName\":\"xyz motor\"}";
-        let headers = new Headers({ 'Content-Type': 'application/json' });
-        let options = new RequestOptions({ headers: headers, method: "post" });
+        let options = { headers: new HttpHeaders({ 'Content-Type': 'application/json' }) };
             
-        return this.http.post(url, body, options)
-            .map((response: Response) => <CMSCompany>response.json())
+        return this.http.post<CMSCompany>(url, body, options).pipe(
             //.do(data => console.log('show company: ' +  JSON.stringify(data)))
-            .catch(this.handleError);
+            catchError(this.handleError)
+        );
     }
 
     putDealer(dealer: CMSCompany): Observable<CMSCompany> {
         
         let url = `${this.putDealerUrl}/${dealer.CompanyID}`;
         let body = JSON.stringify(dealer);
-        let headers = new Headers({ 'Content-Type': 'application/json'});
-        let options = new RequestOptions({ headers: headers });
+        let options = { headers: new HttpHeaders({ 'Content-Type': 'application/json' }) };
 
-        return this.http.put(url, body, options)
-            .map((response: Response) => <CMSCompany> response.json())
+        return this.http.put<CMSCompany>(url, body, options).pipe(
             //.do(data => console.log('All: ' +  JSON.stringify(data)))
-            .catch(this.handleError);
+            catchError(this.handleError)
+        );
     }
         
     // Create dealer credentials
     getAccount(cmsid: number): Observable<string> {
         let url = `${this.getAccountUrl}/${cmsid}`;
-        return this.http.get(url)
-            .map((response: Response) => <string> response.json())
+        return this.http.get<string>(url).pipe(
             //.do(data => console.log('All: ' +  JSON.stringify(data)))
-            .catch(this.handleError);
+            catchError(this.handleError)
+        );
     }
 
     // We were supplied a contactid, so fill form with existing dealer
     getCompanyFromContact(contactid: number): Observable<CMSCompany> {
         let url = `${this.getCompanyFromContactUrl}/${contactid}`;
-        return this.http.get(url)
-            .map((response: Response) => <CMSCompany>response.json())
+        return this.http.get<CMSCompany>(url).pipe(
             //.do(data => console.log('All: ' +  JSON.stringify(data)))
-            .catch(this.handleError);
+            catchError(this.handleError)
+        );
     }
 
     postFlexDealerMatch(company: CMSCompany): Observable<CMSCompany> {
@@ -74,13 +71,12 @@ export class DealerService {
         let url: string = this.postFlexDealerMatchUrl;
         let body = JSON.stringify(company);
         //let body = "{\"CompanyName\":\"xyz motor\"}";
-        let headers = new Headers({ 'Content-Type': 'application/json' });
-        let options = new RequestOptions({ headers: headers, method: "post" });
+        let options = { headers: new HttpHeaders({ 'Content-Type': 'application/json' }) };
             
-        return this.http.post(url, body, options)
-            .map((response: Response) => <CMSCompany>response.json())
+        return this.http.post<CMSCompany>(url, body, options).pipe(
             //.do(data => console.log('dealer match: ' +  JSON.stringify(data)))
-            .catch(this.handleError);
+            catchError(this.handleError)
+        );
     }
     
     postCompany(company: CMSCompany): Observable<CMSCompany> {
@@ -88,13 +84,12 @@ export class DealerService {
         let url: string = this.postCompanyUrl;
         let body = JSON.stringify(company);
         //let body = "{\"CompanyName\":\"xyz motor\"}";
-        let headers = new Headers({ 'Content-Type': 'application/json' });
-        let options = new RequestOptions({ headers: headers, method: "post" });
+        let options = { headers: new HttpHeaders({ 'Content-Type': 'application/json' }) };
             
-        return this.http.post(url, body, options)
-            .map((response: Response) => <CMSCompany>response.json())
+        return this.http.post<CMSCompany>(url, body, options).pipe(
             //.do(data => console.log('show company: ' +  JSON.stringify(data)))
-            .catch(this.handleError);
+            catchError(this.handleError)
+        );
     }
 
     private handleError(error: Response) {
@@ -104,7 +99,7 @@ export class DealerService {
         console.log('dealer service API error: ' + body.Message);
         
         // throw an application level error
-        return Observable.throw(body.Message || "dealer.service: Server error - cannot connect to API");
+        return observableThrowError(body.Message || "dealer.service: Server error - cannot connect to API");
     }
         
 }

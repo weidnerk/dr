@@ -1,11 +1,9 @@
+
+import {throwError as observableThrowError,  Observable } from 'rxjs';
 import { Injectable } from '@angular/core';
 import { Headers, Http, Response, RequestOptions } from '@angular/http';
-
-import { Observable } from 'rxjs/Observable';
-import 'rxjs/add/operator/map';
-import 'rxjs/add/operator/do';
-import 'rxjs/add/operator/catch';
-import 'rxjs/add/observable/throw';
+import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
+import {catchError} from 'rxjs/internal/operators';
 
 import { environment } from '../../environments/environment';
 
@@ -14,22 +12,22 @@ export class SignupService {
   private getEmailExistsUrl: string = environment.API_FLEX_ENDPOINT + 'emailtaken';
   private getCountyUrl:string  = environment.API_FLEX_ENDPOINT + 'county';
   
-  constructor(private http: Http) { }
+  constructor(private http: HttpClient) { }
 
   checkEmailNotTaken(email: string): Observable<boolean> {
     let url = `${this.getEmailExistsUrl}/${email}`;
-    return this.http.get(url)
-      .map((response: Response) => <boolean>response.json())
+    return this.http.get<boolean>(url).pipe(
       //.do(data => console.log('Email exists: ' + JSON.stringify(data)))
-      .catch(this.handleError);
+      catchError(this.handleError)
+    );
   }
 
   getCounty(zip: string): Observable<string> {
     let url = `${this.getCountyUrl}/${zip}`;
-    return this.http.get(url)
-        .map((response: Response) => <string> response.json())
+    return this.http.get<string>(url).pipe(
         //.do(data => console.log('All: ' +  JSON.stringify(data)))
-        .catch(this.handleError);
+        catchError(this.handleError)
+    );
   }
 
   private handleError(error: Response) {
@@ -39,6 +37,6 @@ export class SignupService {
     console.log('dealer service API error: ' + body.Message);
 
     // throw an application level error
-    return Observable.throw(body.Message || "dealer.service: Server error - cannot connect to API");
+    return observableThrowError(body.Message || "dealer.service: Server error - cannot connect to API");
   }
 }

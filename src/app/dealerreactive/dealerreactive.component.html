@@ -1,7 +1,7 @@
 <div class="container">
   <mat-card>
     <mat-card-title>MAF FLEX Dealer Registration</mat-card-title>
-    <mat-card-content>
+    <mat-card-content *ngIf="dealerForm">
       <form [formGroup]="dealerForm" (ngSubmit)="onSubmit(dealerForm.value)">
 
         <mat-form-field>

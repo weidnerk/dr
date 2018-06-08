@@ -49,7 +49,7 @@ body {
 /* mat-form-field.mat-form-field {
     width: 100%;
 } */
-mat-input-container.mat-input-container {
-    width: 100%;
+mat-form-field.mat-form-field {
+    width: 45%;
 }
 

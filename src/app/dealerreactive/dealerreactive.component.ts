@@ -8,9 +8,9 @@ import { CMSCompany } from '../_models/company';
 import { Contact } from '../_models/contact';
 import { CompanyProfile } from '../_models/companyprofile';
 import { ActivatedRoute, Params, Router } from '@angular/router';
-import { Observable } from 'rxjs/Observable';
-import { EmptyObservable } from 'rxjs/observable/EmptyObservable';
+import { Observable, of } from 'rxjs';
 
+import { map } from 'rxjs/operators';
 import { DealerParamService } from '../_services/dealerparam.service'
 import { DealerService } from '../_services/dealer.service'
 import { SignupService } from '../_services/signup.service';
@@ -189,23 +189,23 @@ export class DealerReactiveComponent implements OnInit {
   // Note: this is a flat list of fields passed to the form - not a Company object
   buildForm(): void {
 
-    this.dealerForm = this.fb.group({
-      name: [null, Validators.compose([Validators.required, Validators.minLength(2), Validators.pattern(DEALER_REGEX)])],
-      firstName: [null, Validators.compose([Validators.required, Validators.minLength(2), Validators.pattern(FIRSTNAME_REGEX)])],
-      lastName: [null, Validators.compose([Validators.required, Validators.minLength(2), Validators.pattern(LASTNAME_REGEX)])],
-      email: [null, [Validators.required, Validators.email]],
-      address: [null, Validators.required],
-      address2: [null],
-      city: [null, Validators.required],
-      state: [null, Validators.required],
-      zip: [null, this.validateZip.bind(this), this.validateCounty.bind(this)],
-      phone: [null, this.validatePhone.bind(this)],
-      submitFromDT: [false],
-      DMSId: [null],
-      DMSOther: [null]
-    })
-  }
-  // buildForm_seed(): void {
+  this.dealerForm = this.fb.group({
+    name: [null, [Validators.required, Validators.minLength(2), Validators.pattern(DEALER_REGEX)]],
+    firstName: [null, [Validators.required, Validators.minLength(2), Validators.pattern(FIRSTNAME_REGEX)]],
+    lastName: [null, [Validators.required, Validators.minLength(2), Validators.pattern(LASTNAME_REGEX)]],
+    email: [null, [Validators.required, Validators.email], this.validateEmailNotTaken.bind(this)],
+    address: [null, Validators.required],
+    address2: [null],
+    city: [null, Validators.required],
+    state: [null, Validators.required],
+    zip: [null, this.validateZip.bind(this), this.validateCounty.bind(this)],
+    phone: [null, this.validatePhone.bind(this)],
+    submitFromDT: [false],
+    DMSId: [null],
+    DMSOther: [null]
+  })
+}
+// buildForm_seed(): void {
   //   this.dealerForm = this.fb.group({
   //     name: ["xyz motor corp", Validators.compose([Validators.required, Validators.minLength(2)])],
   //     firstName: ["FAKEBOB", Validators.required],
@@ -221,22 +221,26 @@ export class DealerReactiveComponent implements OnInit {
   //   })
   // }
 
+
   validateCounty(c: AbstractControl): Observable<ValidationErrors | null> {
 
     if (c.value != undefined) {
-      return this.signupService.getCounty(c.value)
-        .map(res => {
+      return this.signupService.getCounty(c.value).pipe(
+        map(res => {
           this.county = res;
           return res ? null : { countyExists: false };
-        });
+        }));
     }
-    return new EmptyObservable();
+    return of(null);
   };
-  // validateEmailNotTaken(control: AbstractControl) {
-  //   return this.signupService.checkEmailNotTaken(control.value).map(res => {
-  //     return !res ? null : { emailTaken: true };
-  //   });
-  // }
+
+  validateEmailNotTaken(control: AbstractControl) {
+    
+    return this.signupService.checkEmailNotTaken(control.value).pipe(
+    map(res => {
+      return !res ? null : { emailTaken: true };
+    }));
+  }
 
   // zip must be 5 digits long
   validateZip(c: AbstractControl): { [key: string]: boolean | null } {

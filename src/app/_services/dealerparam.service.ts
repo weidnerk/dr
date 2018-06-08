@@ -1,7 +1,7 @@
 // refer to: https://www.youtube.com/watch?v=I317BhehZKM
 
 import { Injectable }    from '@angular/core';
-import { BehaviorSubject } from 'rxjs/BehaviorSubject';
+import { BehaviorSubject } from 'rxjs';
 
 import { CMSCompany } from '../_models/company';
 
