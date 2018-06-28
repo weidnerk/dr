@@ -81,7 +81,8 @@ export class DealerReactiveComponent implements OnInit {
     { value: 'UT', viewValue: 'UT' },
     { value: 'VA', viewValue: 'VA' },
     { value: 'WA', viewValue: 'WA' },
-    { value: 'WV', viewValue: 'WV' }
+    { value: 'WV', viewValue: 'WV' },
+    { value: 'WY', viewValue: 'WY' }
   ];
   dealer = new CMSCompany();
   contact = new Contact();
