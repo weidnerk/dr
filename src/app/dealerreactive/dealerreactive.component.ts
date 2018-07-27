@@ -32,6 +32,14 @@ const DEALER_REGEX = /^[a-zA-Z. ]+$/;
 })
 export class DealerReactiveComponent implements OnInit {
 
+  ReferredByValues = [
+    { value: '1', viewValue: 'Field Agent'},
+    { value: '2', viewValue: 'Inside Marketing Agent'},
+    { value: '3', viewValue: 'Referral from Current Client'},
+    { value: '4', viewValue: 'Referral from Frazer'},
+    { value: '5', viewValue: 'Other'}
+  ];
+
   DMSValues = [
     { value: '6', viewValue: 'Frazer' },
     { value: '7', viewValue: 'Wayne Reaves' },
@@ -203,7 +211,8 @@ export class DealerReactiveComponent implements OnInit {
     phone: [null, this.validatePhone.bind(this)],
     submitFromDT: [false],
     DMSId: [null],
-    DMSOther: [null]
+    DMSOther: [null],
+    referredById: [null]
   })
 }
 // buildForm_seed(): void {
