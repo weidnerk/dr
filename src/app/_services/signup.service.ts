@@ -22,9 +22,9 @@ export class SignupService {
     );
   }
 
-  getCounty(zip: string): Observable<string> {
+  getCounty(zip: string): Observable<string[]> {
     let url = `${this.getCountyUrl}/${zip}`;
-    return this.http.get<string>(url).pipe(
+    return this.http.get<string[]>(url).pipe(
         //.do(data => console.log('All: ' +  JSON.stringify(data)))
         catchError(this.handleError)
     );

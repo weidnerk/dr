@@ -14,6 +14,7 @@ import { DealerParamService } from '../_services/dealerparam.service'
     paramDealer: CMSCompany;
     firstName: string;
     lastName: string;
+    referredByName: string;
   
     constructor(private route: Router, private dealerParams: DealerParamService) { 
     }
@@ -26,6 +27,8 @@ import { DealerParamService } from '../_services/dealerparam.service'
           this.paramDealer = paramDealer;
           this.firstName = this.getFirstName(this.paramDealer.Contacts[0].ContactName);
           this.lastName = this.getLastName(this.paramDealer.Contacts[0].ContactName);
+          if (this.paramDealer.CompanyProfile)
+            this.referredByName = this.getReferredFromID(this.paramDealer.CompanyProfile.ReferredBy);
         }
       );
     }
@@ -44,6 +47,30 @@ import { DealerParamService } from '../_services/dealerparam.service'
   getLastName(contact: string): string {
     var stringArray = contact.split(/(\s+)/);
     return stringArray[2];
+  }
+
+  getReferredFromID(id: number) {
+    let name: string;
+    switch (id) {
+      case 1:
+        name = 'Field Agent';
+        break;
+      case 2:
+        name = 'Inside Marketing Agent';
+        break;
+      case 3:
+        name = 'Referral from Current Client';
+        break;
+      case 4:
+        name = 'Referral from Frazer';
+        break;
+      case 5:
+        name = 'Other';
+        break;
+      default:
+        name = null;
+    }
+    return name;
   }
 
 }

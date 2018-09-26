@@ -10,7 +10,7 @@
         <div class="errors" *ngIf="name.invalid && name.touched">
           Please enter a valid name
         </div>
-        <br/>
+        <br />
 
         <div style="float:left;margin:0 10px 10px 0;">
           <mat-form-field>
@@ -43,7 +43,7 @@
             Please enter a valid email address
           </mat-error>
         </mat-form-field>
-        <br/>
+        <br />
 
         <mat-form-field>
           <input matInput formControlName="address" placeholder="Address Line 1" maxlength="40">
@@ -51,29 +51,30 @@
         <div class="errors" *ngIf="address.invalid && address.touched">
           Address is required
         </div>
-        <br/>
+        <br />
 
         <mat-form-field>
           <input matInput formControlName="address2" placeholder="Address Line 2" maxlength="40">
         </mat-form-field>
-        <br/>
+        <br />
 
-        <div style="float:left;margin:0 10px 10px 0;">
-          <mat-form-field>
-            <input matInput formControlName="city" placeholder="City" maxlength="30">
-          </mat-form-field>
-          <div class="errors" *ngIf="city.invalid && city.touched">
-            City is required
-          </div>
-        </div>
         <div>
-          <br/> State
-          <select [formControl]="state">
-            <option *ngFor="let state of states" value={{state.value}}>
-              {{state.viewValue}}
-            </option>
-          </select>
-          <!-- had problems where drop down would lock and could not get rid of it
+          <div style="float:left;">
+            <mat-form-field class="city">
+              <input matInput formControlName="city" placeholder="City" maxlength="30">
+            </mat-form-field>
+            <div class="errors" *ngIf="city.invalid && city.touched">
+              City is required
+            </div>
+          </div>
+          <div>
+            <br /> State
+            <select [formControl]="state">
+              <option *ngFor="let state of states" value={{state.value}}>
+                {{state.viewValue}}
+              </option>
+            </select>
+            <!-- had problems where drop down would lock and could not get rid of it
           (do i have it setup wrong?) 
           2nd problem is required validator not working
        
@@ -84,28 +85,41 @@
               </mat-option>
             </mat-select>
           </mat-form-field> -->
+          </div>
         </div>
-
         <div style="clear:both;"></div>
 
-        <mat-form-field>
-          <input matInput formControlName="zip" placeholder="Zip" maxlength="5">
-          <div class="errors" *ngIf="zip.touched && zip.invalid">
-            Please enter a valid zip code
+        <div style="width:100%;">
+          <div style="float:left;">
+            <mat-form-field class="zipCode">
+              <input matInput formControlName="zip" placeholder="Zip" maxlength="5">
+              <div class="errors" *ngIf="zip.touched && zip.invalid">
+                Please enter a valid zip code
+              </div>
+            </mat-form-field>
           </div>
-        </mat-form-field>
-        {{ county }}
-        <br/>
+          <div>
+            <mat-form-field class="county">
+              <mat-select formControlName="county" placeholder="County">
+                <mat-option *ngFor="let county of counties" [value]="county">
+                  {{ county }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+        </div>
+        <div style="clear:both;"></div>
         <mat-form-field>
-          <input matInput formControlName="phone" placeholder="Phone" maxlength="10" type="text">
+          <input matInput formControlName="phone" placeholder="Business Phone" maxlength="10" type="text">
           <div class="errors" *ngIf="phone.invalid && phone.touched">
             Please enter a valid phone number
           </div>
         </mat-form-field>
-        <br/>
+        <br />
 
-          <mat-checkbox formControlName="submitFromDT" color="primary"></mat-checkbox> Will you be submitting through DealerTrack?
-        <br/><br/>
+        <mat-checkbox formControlName="submitFromDT" color="primary"></mat-checkbox> Will you be submitting through
+        DealerTrack?
+        <br /><br />
 
         <mat-form-field class="DMSWidth">
           <mat-select formControlName="DMSId" placeholder="Your Dealership Management System">
@@ -114,11 +128,11 @@
             </mat-option>
           </mat-select>
         </mat-form-field>
-        <br/>
+        <br />
         <mat-form-field class="DMSWidth">
           <input matInput formControlName="DMSOther" placeholder="Other Dealership Management System" maxlength="40">
         </mat-form-field>
-        <br/>
+        <br />
         <mat-form-field class="DMSWidth">
           <mat-select formControlName="referredById" placeholder="Referred by">
             <mat-option *ngFor="let d of ReferredByValues" [value]="d.value">
@@ -127,11 +141,11 @@
           </mat-select>
         </mat-form-field>
         <p>
-          <button color="accent" type="submit" color="primary" mat-raised-button [disabled]="!dealerForm.valid">Submit</button>
+          <button id="bnSubmit" color="accent" type="submit" color="primary" mat-raised-button [disabled]="!dealerForm.valid">Submit</button>
         </p>
 
       </form>
-      <br/>
+      <br />
       <span style="color:red">{{ errorMessage }}</span>
       <!--
          <p>Form: {{ dealerForm.value | json }}</p>

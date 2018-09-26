@@ -10,6 +10,7 @@ import { map } from 'rxjs/operators';
 
 export class ValidateCountyExists {
 
+  // 09.12.2018 note being used
   static createValidator(signupService: SignupService) {
     
     return (control: AbstractControl) => {

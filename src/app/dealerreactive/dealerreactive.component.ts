@@ -22,7 +22,7 @@ import { MatSelectModule } from '@angular/material';
 const FIRSTNAME_REGEX = /^[a-zA-Z]+$/;
 const LASTNAME_REGEX = /^[a-zA-Z ']+$/;
 //const LASTNAME_REGEX = "[a-zA-Z][a-zA-Z ]+";  // can have a space
-const DEALER_REGEX = /^[a-zA-Z. ]+$/;
+const DEALER_REGEX = /^[0-9a-zA-Z. ]+$/;
 
 
 @Component({
@@ -33,11 +33,11 @@ const DEALER_REGEX = /^[a-zA-Z. ]+$/;
 export class DealerReactiveComponent implements OnInit {
 
   ReferredByValues = [
-    { value: '1', viewValue: 'Field Agent'},
-    { value: '2', viewValue: 'Inside Marketing Agent'},
-    { value: '3', viewValue: 'Referral from Current Client'},
-    { value: '4', viewValue: 'Referral from Frazer'},
-    { value: '5', viewValue: 'Other'}
+    { value: '1', viewValue: 'Field Agent' },
+    { value: '2', viewValue: 'Inside Marketing Agent' },
+    { value: '3', viewValue: 'Referral from Current Client' },
+    { value: '4', viewValue: 'Referral from Frazer' },
+    { value: '5', viewValue: 'Other' }
   ];
 
   DMSValues = [
@@ -96,7 +96,7 @@ export class DealerReactiveComponent implements OnInit {
   contact = new Contact();
   //dealer: CMSCompany;     // shared, service variable
   errorMessage: string;
-  county: string;
+  counties: string[];
   qryStrEmail: string;
   qryStrContactId: string;
   qryStrSupplied: boolean = false;
@@ -143,7 +143,16 @@ export class DealerReactiveComponent implements OnInit {
               this.dealer = dealer;
               this.dealerParams.currentQryStr.subscribe(qryStr => {
                 this.qryStrSupplied = qryStr;
-                this.setupForm();
+
+                this.signupService.getCounty(this.dealer.Zip)
+                  .subscribe(x => {
+                    this.counties = x;
+                    this.setupForm();
+                  },
+                    error => {
+                      this.errorMessage = error.errMsg;
+                    });
+
               })
             })
         }
@@ -162,8 +171,8 @@ export class DealerReactiveComponent implements OnInit {
         else
           this.dealerForm.controls['email'].disable();
 
-          // why is this null?
-          //console.log('dms id: ' + this.dealer.CompanyProfile.DMSId);
+        // why is this null?
+        //console.log('dms id: ' + this.dealer.CompanyProfile.DMSId);
 
         // if qrystr, click refresh, this.dealer has values?
         this.dealerForm.patchValue({
@@ -178,10 +187,13 @@ export class DealerReactiveComponent implements OnInit {
           phone: this.replaceAll(this.dealer.Phone, '-', ''),
           zip: this.dealer.Zip,
           submitFromDT: this.dealer.SubmitFromDT,
-          DMSId: (this.dealer.CompanyProfile != null) ? this.dealer.CompanyProfile.DMSId.toString() : null,
-          DMSOther: this.dealer.DMSOther
+          DMSId: (this.dealer.CompanyProfile != null && this.dealer.CompanyProfile.DMSId != null) ? this.dealer.CompanyProfile.DMSId.toString() : null,
+          DMSOther: this.dealer.DMSOther,
+          referredById: (this.dealer.CompanyProfile != null && this.dealer.CompanyProfile.ReferredBy != null) ? this.dealer.CompanyProfile.ReferredBy.toString() : null,
+          county: this.dealer.County
         });
         //this.dealerForm.controls['DMSId'].setValue('3');
+        //this.dealerForm.controls['county'].setValue(this.dealer.County);
       }
     }
   }
@@ -198,70 +210,68 @@ export class DealerReactiveComponent implements OnInit {
   // Note: this is a flat list of fields passed to the form - not a Company object
   buildForm(): void {
 
-  this.dealerForm = this.fb.group({
-    name: [null, [Validators.required, Validators.minLength(2), Validators.pattern(DEALER_REGEX)]],
-    firstName: [null, [Validators.required, Validators.minLength(2), Validators.pattern(FIRSTNAME_REGEX)]],
-    lastName: [null, [Validators.required, Validators.minLength(2), Validators.pattern(LASTNAME_REGEX)]],
-    email: [null, [Validators.required, Validators.email], this.validateEmailNotTaken.bind(this)],
-    address: [null, Validators.required],
-    address2: [null],
-    city: [null, Validators.required],
-    state: [null, Validators.required],
-    zip: [null, this.validateZip.bind(this), this.validateCounty.bind(this)],
-    phone: [null, this.validatePhone.bind(this)],
-    submitFromDT: [false],
-    DMSId: [null],
-    DMSOther: [null],
-    referredById: [null]
-  })
-}
-// buildForm_seed(): void {
-  //   this.dealerForm = this.fb.group({
-  //     name: ["xyz motor corp", Validators.compose([Validators.required, Validators.minLength(2)])],
-  //     firstName: ["FAKEBOB", Validators.required],
-  //     lastName: ["smith", Validators.required],
-  //     email: ["kevinw1@midfinance.com", Validators.required],
-  //     address: ["123 elm", Validators.required],
-  //     address2: ["apt 12"],
-  //     city: ["Atlanta", Validators.required],
-  //     state: [null, Validators.required],
-  //     zip: [null, this.validateZip.bind(this)],
-  //     phone: ["8135559968", this.validatePhone.bind(this)],
-  //     submitFromDT: [false]
-  //   })
-  // }
-
+    this.dealerForm = this.fb.group({
+      name: [null, [Validators.required, Validators.minLength(2), Validators.pattern(DEALER_REGEX)]],
+      firstName: [null, [Validators.required, Validators.minLength(2), Validators.pattern(FIRSTNAME_REGEX)]],
+      lastName: [null, [Validators.required, Validators.minLength(2), Validators.pattern(LASTNAME_REGEX)]],
+      email: [null, [Validators.required, Validators.email], this.validateEmailNotTaken.bind(this)],
+      address: [null, Validators.required],
+      address2: [null],
+      city: [null, Validators.required],
+      state: [null, Validators.required],
+      zip: [null, this.validateZip.bind(this), this.validateCounty.bind(this)],
+      phone: [null, this.validatePhone.bind(this)],
+      submitFromDT: [false],
+      DMSId: [null],
+      DMSOther: [null],
+      referredById: [null],
+      county: [null, Validators.required]
+    })
+  }
 
   validateCounty(c: AbstractControl): Observable<ValidationErrors | null> {
 
     if (c.value != undefined) {
-      return this.signupService.getCounty(c.value).pipe(
-        map(res => {
-          this.county = res;
-          return res ? null : { countyExists: false };
-        }));
+      this.signupService.getCounty(c.value)
+        .subscribe(x => {
+          this.counties = x;
+          if (this.counties.length == 1) {
+            this.dealerForm.patchValue({
+              county: this.counties[0]
+            });
+          }
+          return null;
+        },
+          error => {
+            this.errorMessage = error.errMsg;
+          });
     }
     return of(null);
   };
 
   validateEmailNotTaken(control: AbstractControl) {
-    
+
     return this.signupService.checkEmailNotTaken(control.value).pipe(
-    map(res => {
-      return !res ? null : { emailTaken: true };
-    }));
+      map(res => {
+        return !res ? null : { emailTaken: true };
+      }));
   }
 
   // zip must be 5 digits long
   validateZip(c: AbstractControl): { [key: string]: boolean | null } {
 
     if (c.value != undefined) {
+      this.dealerForm.controls['county'].setValue(null);
       let strLength: number = (<string>c.value).length;
-      if (strLength != 5)
+      if (strLength != 5) {
+        this.counties = null;
         return { error: true };
+      }
 
-      if (isNaN(c.value))
+      if (isNaN(c.value)) {
+        this.counties = null;
         return { error: true };
+      }
       else {
         return null;    // control is valid              
       }
@@ -345,9 +355,11 @@ export class DealerReactiveComponent implements OnInit {
     this.dealer.City = dlrForm.city.trim();
     this.dealer.State = dlrForm.state;
     this.dealer.Zip = dlrForm.zip;
-    this.dealer.County = this.county;
+    this.dealer.County = dlrForm.county;
     this.dealer.Phone = dlrForm.phone;
     this.dealer.SubmitFromDT = dlrForm.submitFromDT;
+
+    // Did user select a DMS?
     if (dlrForm.DMSId != null) {
       if (this.dealer.CompanyProfile == null) {
         let p = new CompanyProfile();
@@ -362,6 +374,19 @@ export class DealerReactiveComponent implements OnInit {
     }
     this.dealer.DMSOther = dlrForm.DMSOther;
 
+    // Did user select a "Referred By" value?
+    if (dlrForm.referredById != null) {
+      if (this.dealer.CompanyProfile == null) {
+        let p = new CompanyProfile();
+        p.CompanyID = this.dealer.CompanyID;
+        p.ReferredBy = Number(dlrForm.referredById);
+        this.dealer.CompanyProfile = p;
+      }
+      else {
+        this.dealer.CompanyProfile.ReferredBy = Number(dlrForm.referredById);
+      }
+    }
+
     // fill contact
     if (this.dealer.CompanyID != null) {
       this.dealer.Contacts = [{
@@ -371,9 +396,9 @@ export class DealerReactiveComponent implements OnInit {
         ContactName: dlrForm.firstName.trim() + ' ' + dlrForm.lastName.trim()
       }];
 
-      if (this.dealer.CompanyProfile != null) {
-        this.dealer.CompanyProfile = { CompanyID: this.dealer.CompanyID, DMSId: this.dealer.CompanyProfile.DMSId};
-      }
+      // if (this.dealer.CompanyProfile != null) {
+      //   this.dealer.CompanyProfile = { CompanyID: this.dealer.CompanyID, DMSId: this.dealer.CompanyProfile.DMSId, ReferredBy: this.dealer.CompanyProfile.ReferredBy };
+      // }
     }
     else {
       this.contact = new Contact();
@@ -382,11 +407,11 @@ export class DealerReactiveComponent implements OnInit {
       this.dealer.Contacts = [];
       this.dealer.Contacts.push(this.contact);
 
-      if (this.dealer.CompanyProfile != null) {
-        let profile = new CompanyProfile();
-        profile.DMSId = this.dealer.CompanyProfile.DMSId;
-        this.dealer.CompanyProfile = profile;
-      }
+      // if (this.dealer.CompanyProfile != null) {
+      //   let profile = new CompanyProfile();
+      //   profile.DMSId = this.dealer.CompanyProfile.DMSId;
+      //   this.dealer.CompanyProfile = profile;
+      // }
     }
 
     this.dealerService.postCompany(this.dealer).subscribe(
