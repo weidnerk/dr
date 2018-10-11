@@ -140,6 +140,16 @@
             </mat-option>
           </mat-select>
         </mat-form-field>
+        <div>
+          <mat-form-field>
+            <input type="number" matInput formControlName="stateSalesTax" placeholder="Sales Tax Percent">
+          </mat-form-field>
+        </div>
+        <div>
+          <mat-form-field>
+            <input type="number" matInput formControlName="countyTax" placeholder="County Tax Percent" maxlength="5">
+          </mat-form-field>
+        </div>
         <p>
           <button id="bnSubmit" color="accent" type="submit" color="primary" mat-raised-button [disabled]="!dealerForm.valid">Submit</button>
         </p>

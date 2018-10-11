@@ -1,6 +1,7 @@
 import { Contact } from '../_models/contact';
 import { CompanyProfile } from '../_models/companyprofile';
 
+// models tblCompany
 export class CMSCompany {
     CompanyName: string;
     CompanyID: number;          // CMS ID
@@ -17,4 +18,6 @@ export class CMSCompany {
     DMSOther: string;
     DMSName: string;
     CompanyProfile: CompanyProfile;
+    DlrSaleTaxPer: number;
+    DlrCntyTaxPer: number;
 }

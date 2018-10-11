@@ -190,7 +190,9 @@ export class DealerReactiveComponent implements OnInit {
           DMSId: (this.dealer.CompanyProfile != null && this.dealer.CompanyProfile.DMSId != null) ? this.dealer.CompanyProfile.DMSId.toString() : null,
           DMSOther: this.dealer.DMSOther,
           referredById: (this.dealer.CompanyProfile != null && this.dealer.CompanyProfile.ReferredBy != null) ? this.dealer.CompanyProfile.ReferredBy.toString() : null,
-          county: this.dealer.County
+          county: this.dealer.County,
+          stateSalesTax: (this.dealer.DlrSaleTaxPer) ? Number(this.dealer.DlrSaleTaxPer) :null,
+          countyTax: (this.dealer.DlrCntyTaxPer) ? Number(this.dealer.DlrCntyTaxPer) :null,
         });
         //this.dealerForm.controls['DMSId'].setValue('3');
         //this.dealerForm.controls['county'].setValue(this.dealer.County);
@@ -225,7 +227,9 @@ export class DealerReactiveComponent implements OnInit {
       DMSId: [null],
       DMSOther: [null],
       referredById: [null],
-      county: [null, Validators.required]
+      county: [null, Validators.required],
+      stateSalesTax: [null, [Validators.max(10), Validators.min(0)]],
+      countyTax: [null, [Validators.max(10), Validators.min(0)]]
     })
   }
 
@@ -387,6 +391,16 @@ export class DealerReactiveComponent implements OnInit {
       }
     }
 
+    if (dlrForm.stateSalesTax)
+      this.dealer.DlrSaleTaxPer = Number(dlrForm.stateSalesTax);
+    else
+      this.dealer.DlrSaleTaxPer = null;
+
+    if (dlrForm.countyTax)
+      this.dealer.DlrCntyTaxPer = Number(dlrForm.countyTax);
+    else
+      this.dealer.DlrCntyTaxPer = null;
+
     // fill contact
     if (this.dealer.CompanyID != null) {
       this.dealer.Contacts = [{
@@ -395,10 +409,6 @@ export class DealerReactiveComponent implements OnInit {
         Email: dlrForm.email,
         ContactName: dlrForm.firstName.trim() + ' ' + dlrForm.lastName.trim()
       }];
-
-      // if (this.dealer.CompanyProfile != null) {
-      //   this.dealer.CompanyProfile = { CompanyID: this.dealer.CompanyID, DMSId: this.dealer.CompanyProfile.DMSId, ReferredBy: this.dealer.CompanyProfile.ReferredBy };
-      // }
     }
     else {
       this.contact = new Contact();
@@ -406,12 +416,6 @@ export class DealerReactiveComponent implements OnInit {
       this.contact.Email = dlrForm.email;
       this.dealer.Contacts = [];
       this.dealer.Contacts.push(this.contact);
-
-      // if (this.dealer.CompanyProfile != null) {
-      //   let profile = new CompanyProfile();
-      //   profile.DMSId = this.dealer.CompanyProfile.DMSId;
-      //   this.dealer.CompanyProfile = profile;
-      // }
     }
 
     this.dealerService.postCompany(this.dealer).subscribe(
