@@ -70,7 +70,6 @@ export class DealerService {
         
         let url: string = this.postFlexDealerMatchUrl;
         let body = JSON.stringify(company);
-        //let body = "{\"CompanyName\":\"xyz motor\"}";
         let options = { headers: new HttpHeaders({ 'Content-Type': 'application/json' }) };
             
         return this.http.post<CMSCompany>(url, body, options).pipe(
@@ -83,7 +82,6 @@ export class DealerService {
         
         let url: string = this.postCompanyUrl;
         let body = JSON.stringify(company);
-        //let body = "{\"CompanyName\":\"xyz motor\"}";
         let options = { headers: new HttpHeaders({ 'Content-Type': 'application/json' }) };
             
         return this.http.post<CMSCompany>(url, body, options).pipe(
